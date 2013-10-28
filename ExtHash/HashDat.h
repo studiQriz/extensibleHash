@@ -42,7 +42,7 @@ private:
 	int* _bucketIndex;
 
 	// Calculates the hash for a Customer number
-	long hashCalc(int kunNum);
+	int hashCalc(int kunNum);
 	// Writes the current Bucket to disk
 	void write();
 	// Writes a bucket to disk
@@ -232,14 +232,14 @@ void HashDat<datasetCount>::writeConfig() {
 }
 
 template<int datasetCount>
-long HashDat<datasetCount>::hashCalc(int kunNum) {
+int HashDat<datasetCount>::hashCalc(int kunNum) {
 	//unsigned int m = pow((double)2, _globalDepth);
 	//unsigned int ret = (unsigned int) floor( ( (double) m * fmod( S_VALUE * (double) kunNum, W_VALUE) ) / W_VALUE );
 	//return ret;
 
 	//float r = (sqrt(5.0f) - 1)/2;
 	//float tmp = kunNum * r;
-	//return (tmp - ((int)tmp))*LONG_MAX;
+	//return (tmp - ((int)tmp))*INT_MAX;
 
 	return kunNum;
 }
@@ -272,7 +272,7 @@ void HashDat<datasetCount>::read(int index) {
 template<int datasetCount>
 int HashDat<datasetCount>::getTableEntry(int kunNum){
 	// Compute hash
-	long hash = hashCalc(kunNum);
+	int hash = hashCalc(kunNum);
 
 	//Computes for given hash, numbers in interval [0, 2^globalDepth-1]
 	int tableIndex = (hash % (int)pow((double)2, _globalDepth));
@@ -317,6 +317,7 @@ void HashDat<datasetCount>::splitBucket(int tableIndex) {
 	int oldLocalDepth = _localDepth[tableIndex];
 	int newBucketIndex = _nextBucketIndex++;
 
+
 	int oldBucket = _bucketIndex[tableIndex];
 	_localDepth[tableIndex] = oldLocalDepth + 1;
 	_bucketIndex[tableIndex] = newBucketIndex;
@@ -329,38 +330,17 @@ void HashDat<datasetCount>::splitBucket(int tableIndex) {
 
 	for(int i= 0; i < datasetCount; i++) {
 		Kunde& kun = _currBucket.GetKunde(i);
-		int newTable = getTableEntry(kun.GetKunNum());
-
-		// Keep in first bucket
-		if(_bucketIndex[newTable] == _currBucketIndex) {
-			cout << "Keep Kunde " << kun.GetKunNum() << " in current Bucket " << _currBucketIndex << endl;
-			addData(&tmpBucket, kun.GetKunNum(), kun.GetKunName(), kun.GetSkonto());
-			kun.Clear();
-		}
-		// Put in second bucket
-		else {
-			cout << "Store Kunde " << kun.GetKunNum() << " in Bucket-Index " << newBucketIndex << endl;
-
-			addData(&newBucket, kun.GetKunNum(), kun.GetKunName(), kun.GetSkonto());
-			kun.Clear();
-		}	
-	}
-
-	for(int i = 0; i < datasetCount; i++) {
-		Kunde& tmpKun = tmpBucket.GetKunde(i);
-		if(tmpKun.GetKunNum() == (KUNDE_EMPTY)) {
-			break;
-		}
-		else {
-			Kunde& kun = _currBucket.GetKunde(i);
-			kun.SetKunNum(tmpKun.GetKunNum());
-			kun.SetKunName(tmpKun.GetKunName());
-			kun.SetSkonto(tmpKun.GetSkonto());
-		}
+		addData(&tmpBucket, kun.GetKunNum(), kun.GetKunName(), kun.GetSkonto());
+		kun.Clear();
 	}
 
 	write();
 	insertWrite(newBucket, newBucketIndex);
+
+	for(int i = 0; i < datasetCount; i++) {
+		Kunde& kun = tmpBucket.GetKunde(i);
+		Insert(kun.GetKunNum(), kun.GetKunName(), kun.GetSkonto());
+	}
 }
 
 template<int datasetCount>

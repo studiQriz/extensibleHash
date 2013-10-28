@@ -1,6 +1,7 @@
 #include "HashDat.h"
+#include <stdlib.h>
 
-#define SIZE 1
+#define SIZE 5
 
 int main()
 {
@@ -14,16 +15,60 @@ int main()
 	Kunde tmp;
 
 
-	/*cout << "Create a new database or use an existing one." << endl;
+	cout << "Create a new database or use an existing one." << endl;
 	cout << "Specify location for data file: ";
 	cin >> file;
 	cout << endl;
 	cout << "Specify location for the configuration file: ";
 	cin >> conf;
 	cout << endl;
-	HashDat<(SIZE)> hashdat(file, conf);*/
+	HashDat<(SIZE)> hashdat(file, conf);
 
+	//Test Software like a baus!
+	//Not generated.
+	//int stuff[] = { 0, 1, 2, 3, 4, 5, 8, 9, 16, 17, 32, 33,
+	//	64, 65, 128, 129, 256, 257, 59,60,107,173,191,223,101,23,41,157,151};
+	//int size = sizeof(stuff) / sizeof(stuff[0]);
+
+	/*//Generated.
+	const int size = 1000;
+	int stuff[size];
+	//Set elements
+	for(int i = 0; i < size; i++) {
+		stuff[i] = i;
+	}
+	//Mix it.
+	for(int mix = 0; mix < size*2; mix++) {
+		int index = rand() % size;
+		int index2 = rand() % size;
+
+		while(index == index2)
+			index2 = rand() % size;
+		int tmp = stuff[index];
+		stuff[index] = stuff[index2];
+		stuff[index2] = tmp;
+	}
+	char tmpName[20] = {'n','n','n','n','n', '\0'};
 	HashDat<(SIZE)> hashdat("killme");
+	//Test it
+	for(int i = 0; i < size; i++) {
+		hashdat.Insert(stuff[i], tmpName, 0);
+	}
+
+	for(int i = 0; i < size; i++) {
+		hashdat.Retrieve(stuff[i]);
+	}
+
+	for(int i = 0; i < size; i++) {
+		bool flew = false;
+		try{
+			hashdat.Insert(stuff[i], tmpName, 0);	
+		}catch (HashDat<(SIZE)>::BadArticle& e) {
+			flew = true;
+		}
+		if(!flew)
+			throw 9;
+	}*/
 
 	while(input != 0) {
 		cout << endl << " --- Menu --- " << endl;
